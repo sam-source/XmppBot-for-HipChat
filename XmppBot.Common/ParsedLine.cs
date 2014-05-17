@@ -4,17 +4,20 @@ namespace XmppBot.Common
 {
     public class ParsedLine
     {
-        public ParsedLine(string line, string user)
+        public ParsedLine(string line, string user, string botHandle)
         {
-            ParseLine(line);
+            ParseLine(line, botHandle);
             this.User = user;
+            this.BotHandle = botHandle;
         }
 
-        private void ParseLine(string line)
+        private void ParseLine(string line, string botHandle)
         {
             this.Raw = line;
-            this.IsCommand = line.StartsWith("!");
+            this.IsCommand = line.StartsWith("!") || line.StartsWith(botHandle);
             line = line.TrimStart('!');
+            line = line.TrimStart(botHandle.ToCharArray());
+            line = line.TrimStart();
 
             string[] parts = line.Split(' ');
             if (parts.Length <= 0)
@@ -34,5 +37,7 @@ namespace XmppBot.Common
         public string[] Args { get; private set; }
         public bool IsCommand { get; private set; }
         public string User { get; private set; }
+
+        public string BotHandle { get; private set; }
     }
 }

@@ -106,12 +106,16 @@ namespace XMPP_bot
                 Console.WriteLine("Message : {0} - from {1}", msg.Body, msg.From);
 
                 string user;
-
+                
                 if (msg.Type != MessageType.groupchat)
                 {
-                    if (!_roster.TryGetValue(msg.From.User, out user))
-                    {
+                    if (msg.From == null || msg.From.User == null) {
                         user = "Unknown User";
+                    }
+                    else {
+                        if (!_roster.TryGetValue(msg.From.User, out user)) {
+                            user = "Unknown User";
+                        }
                     }
                 }
                 else
@@ -122,12 +126,12 @@ namespace XMPP_bot
                 if (user == ConfigurationManager.AppSettings["RoomNick"])
                     return;
 
-                ParsedLine line = new ParsedLine(msg.Body.Trim(), user);
+                ParsedLine line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
 
                 switch (line.Command)
                 {
                     case "close":
-                        SendMessage(msg.From, "I'm a quitter...", msg.Type);
+                        SendMessage(msg.From, "Buh Bye...", msg.Type);
                         Environment.Exit(1);
                         return;
 
@@ -145,6 +149,17 @@ namespace XMPP_bot
                                               Parallel.ForEach(SequencePlugins,
                                                   plugin => SendSequence(msg.From, plugin.Evaluate(line), msg.Type)
                                                   ));
+
+                        Task.Factory.StartNew(() =>
+                                              Parallel.ForEach(MultiRoomPlugins,
+                                                  plugin =>
+                                                  {
+                                                      var temp = plugin.Evaluate(line, msg.From.Bare);
+                                                      if (temp == null) {
+                                                          return;
+                                                      }
+                                                      SendMessage(new Jid(temp.RoomId), temp.Message, msg.Type);
+                                                  }));
                         break;
                 }
             }
@@ -177,11 +192,15 @@ namespace XMPP_bot
         [ImportMany(AllowRecomposition = true)]
         public static IEnumerable<IXmppBotSequencePlugin> SequencePlugins { get; set; }
 
+        [ImportMany(AllowRecomposition = true)]
+        public static IEnumerable<IXmppBotMultiRoomPlugin> MultiRoomPlugins { get; set; }
+
         private static string LoadPlugins()
         {
             var container = new CompositionContainer(_catalog);
             Plugins = container.GetExportedValues<IXmppBotPlugin>();
             SequencePlugins = container.GetExportedValues<IXmppBotSequencePlugin>();
+            MultiRoomPlugins = container.GetExportedValues<IXmppBotMultiRoomPlugin>();
 
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("Loaded the following plugins");
