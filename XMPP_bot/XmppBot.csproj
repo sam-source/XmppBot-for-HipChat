@@ -64,6 +64,18 @@
       <Project>{7553588F-7628-4689-B02B-CC2F504F82C2}</Project>
       <Name>XmppBot.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\XmppBot.Plugins.Conversation\XmppBot.Plugins.Conversation.csproj">
+      <Project>{f59e46c1-c3ef-401d-ac21-57d6ba0f0812}</Project>
+      <Name>XmppBot.Plugins.Conversation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmppBot.Plugins.Deployments\XmppBot.Plugins.Deployments.csproj">
+      <Project>{ba5a18fe-5f69-48af-907c-a835120af6e2}</Project>
+      <Name>XmppBot.Plugins.Deployments</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmppBot.Plugins\XmppBot.Plugins.csproj">
+      <Project>{b11e3f86-cea6-4ea6-b15f-7819c57e8a92}</Project>
+      <Name>XmppBot.Plugins</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

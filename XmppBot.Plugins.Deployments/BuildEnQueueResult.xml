@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<restQueuedBuild planKey="TNEXWEB-TNEWV45QALIGHT" buildNumber="2724" buildResultKey="TNEXWEB-TNEWV45QALIGHT-2724">
+  <triggerReason>Manual build</triggerReason>
+  <link href="http://bamboo.tessituranetwork.com:8085/rest/api/latest/result/TNEXWEB-TNEWV45QALIGHT-2724" rel="self"/>
+</restQueuedBuild>

@@ -41,7 +41,7 @@ namespace XmppBot.Plugins
                     }
 
                     if (line.Args.FirstOrDefault() == "@smenard") {
-                        return "@eve does not hurt master.";
+                        return "@eve does not hurt Sam.";
                     }
 
                     return String.Format("/me smacks {1} around with a large trout ... https://www.youtube.com/watch?v=IhJQp-q1Y1s", line.BotHandle, line.Args.FirstOrDefault() ?? "your mom");

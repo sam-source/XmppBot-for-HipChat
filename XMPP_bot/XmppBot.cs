@@ -130,7 +130,7 @@ namespace XMPP_bot
 
                 switch (line.Command)
                 {
-                    case "close":
+                    case "leave":
                         SendMessage(msg.From, "Buh Bye...", msg.Type);
                         Environment.Exit(1);
                         return;

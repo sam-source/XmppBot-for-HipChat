@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7553588F-7628-4689-B02B-CC2F504F82C2}</ProjectGuid>
+    <ProjectGuid>{BA5A18FE-5F69-48AF-907C-A835120AF6E2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XmppBot.Common</RootNamespace>
-    <AssemblyName>XmppBot.Common</AssemblyName>
+    <RootNamespace>XmppBot.Plugins.Deployments</RootNamespace>
+    <AssemblyName>XmppBot.Plugins.Deployments</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpSvn">
+      <HintPath>..\packages\SharpSvn.1.9-x64.1.8991.3268.65\lib\net40\SharpSvn.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpSvn.UI">
+      <HintPath>..\packages\SharpSvn.1.9-x64.1.8991.3268.65\lib\net40\SharpSvn.UI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -43,9 +48,6 @@
     <Reference Include="System.Reactive.Linq">
       <HintPath>..\packages\Rx-Linq.2.2.2\lib\net40\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,17 +55,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IXmppBotMultiRoomPlugin.cs" />
-    <Compile Include="IXmppBotSequencePlugin.cs" />
-    <Compile Include="MultiRoomMessage.cs" />
-    <Compile Include="ParsedLine.cs" />
-    <Compile Include="IXmppBotPlugin.cs" />
+    <Compile Include="BambooBuild.cs" />
+    <Compile Include="BambooResultParser.cs" />
+    <Compile Include="DeployPlugin.cs" />
+    <Compile Include="TagCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XmppBot.Common\XmppBot.Common.csproj">
+      <Project>{7553588F-7628-4689-B02B-CC2F504F82C2}</Project>
+      <Name>XmppBot.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="BuildEnQueueResult.xml" />
+    <Content Include="BuildStatus.xml" />
+    <Content Include="BuildStatusCompleted.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)XMPP_Bot\bin\$(ConfigurationName)\plugins\"
+copy "$(TargetDir)*.*" "$(SolutionDir)XMPP_Bot\bin\$(ConfigurationName)\plugins\"
+del "$(SolutionDir)XMPP_Bot\bin\$(ConfigurationName)\plugins\SecureBlackbox.dll"
+del "$(SolutionDir)XMPP_Bot\bin\$(ConfigurationName)\plugins\SecureBlackbox.PGP.dll"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

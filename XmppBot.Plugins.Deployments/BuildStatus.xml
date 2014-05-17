@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<result expand="changes,metadata,plan,vcsRevisions,artifacts,comments,labels,jiraIssues,stages" key="TNEXWEB-TNEWV45QALIGHT-2723" state="Unknown" lifeCycleState="InProgress" number="2723" id="31064166" continuable="false" onceOff="false" restartable="false" notRunYet="false" finished="false" successful="false">
+  <link href="http://bamboo.tessituranetwork.com:8085/rest/api/latest/result/TNEXWEB-TNEWV45QALIGHT-2723" rel="self"/>
+  <plan key="TNEXWEB-TNEWV45QALIGHT" name="1-EXPRESSWEB - TNEW V45 QA - LITE" shortName="TNEW V45 QA - LITE" shortKey="TNEWV45QALIGHT" type="chain" enabled="true">
+    <planKey>
+      <key>TNEXWEB-TNEWV45QALIGHT</key>
+    </planKey>
+    <link href="http://bamboo.tessituranetwork.com:8085/rest/api/latest/plan/TNEXWEB-TNEWV45QALIGHT" rel="self"/>
+  </plan>
+  <planName>TNEW V45 QA - LITE</planName>
+  <projectName>
+    1-EXPRESSWEB
+  </projectName>
+  <buildResultKey>TNEXWEB-TNEWV45QALIGHT-2723</buildResultKey>
+  <planResultKey>
+    <key>TNEXWEB-TNEWV45QALIGHT-2723</key>
+    <entityKey>
+      <key>
+        TNEXWEB-TNEWV45QALIGHT
+      </key>
+    </entityKey>
+    <resultNumber>2723</resultNumber>
+  </planResultKey>
+  <buildState>
+    Unknown
+  </buildState>
+  <buildNumber>2723</buildNumber>
+  <buildStartedTime>
+    2014-05-16T 22:43:21.600-05:00
+  </buildStartedTime>
+  <prettyBuildStartedTime>
+    Fri, 16 May, 10:43 PM
+  </prettyBuildStartedTime>
+  <buildDurationInSeconds>0</buildDurationInSeconds>
+  <buildDuration>0</buildDuration>
+  <buildDurationDescription>
+    Unknown
+  </buildDurationDescription>
+  <buildRelativeTime></buildRelativeTime>
+  <vcsRevisionKey>
+    15245
+  </vcsRevisionKey>
+  <vcsRevisions start-index="0" max-result="1" size="1"/>
+  <buildReason>
+    Manual run by &lt;a href=&quot;http://bamboo.tessituranetwork.com:8085/browse/user/smenard&quot;&gt;Sam Menard&lt;/a&gt;
+  </buildReason>
+  <reasonSummary>
+    Manual run by &lt;a href=&quot;http://bamboo.tessituranetwork.com:8085/browse/user/smenard&quot;&gt;Sam Menard&lt;/a&gt;
+  </reasonSummary>
+  <artifacts start-index="0" max-result="0" size="0"/>
+  <comments start-index="0" max-result="0" size="0"/>
+  <labels start-index="0" max-result="0" size="0"/>
+  <jiraIssues start-index="0" max-result="0" size="0"/>
+  <stages start-index="0" max-result="1" size="1"/>
+  <changes start-index="0" max-result="0" size="0"/>
+  <metadata start-index="0" max-result="2" size="2"/>
+  <progress>
+    <isValid>true</isValid>
+    <isUnderAverageTime>true</isUnderAverageTime>
+    <percentageCompleted>0.04284737233180221</percentageCompleted>
+    <percentageCompletedPretty>4%</percentageCompletedPretty>
+    <prettyTimeRemaining>
+      3 mins remaining
+    </prettyTimeRemaining>
+    <prettyTimeRemainingLong>
+      Approximately 3 minutes remaining
+    </prettyTimeRemainingLong>
+    <averageBuildDuration>236864</averageBuildDuration>
+    <prettyAverageBuildDuration>3 mins</prettyAverageBuildDuration>
+    <buildTime>10149</buildTime>
+    <prettyBuildTime>10 secs</prettyBuildTime>
+    <startedTime>16 May 2014, 10:43:21 PM</startedTime>
+    <startedTimeFormatted>2014-05-16T22:43:21</startedTimeFormatted>
+    <prettyStartedTime>10 seconds ago</prettyStartedTime>
+  </progress>
+</result>
