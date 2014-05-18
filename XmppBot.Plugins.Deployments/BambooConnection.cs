@@ -5,11 +5,22 @@ using System.Xml.Linq;
 
 namespace XmppBot.Plugins.Deployments
 {
-    public class BambooBuild
+    public class BambooConnection
     {
+        private class MyWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                var request = base.GetWebRequest(address);
+                
+                request.Timeout = 5000;
+
+                return request;
+            }
+        }
         private static Dictionary<string, string> PlanMapping;
 
-        static BambooBuild()
+        static BambooConnection()
         {
             PlanMapping = new Dictionary<string, string>();
             PlanMapping.Add("tnew+qa", "TNEXWEB-TNEWV45QALIGHT");
@@ -19,11 +30,13 @@ namespace XmppBot.Plugins.Deployments
             PlanMapping.Add("tnst+qa", "TNEXWEB-TNEWV45QALIGHT");
             PlanMapping.Add("tnst+live", "TNEXWEB-TNEWV45LIVELIGHT");
         }
+
         private WebClient GetWebClient()
         {
             // curl -X POST --user eve:Tr1fl3! "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/TNEXWEB-TNEWV45QALIGHT?os_authType=basic"
 
-            var client = new WebClient();
+            var client = new MyWebClient();
+            
             client.Headers.Add("Authorization", "Basic ZXZlOlRyMWZsMyE=");
             return client;
         }
