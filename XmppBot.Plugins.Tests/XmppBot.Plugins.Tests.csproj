@@ -62,14 +62,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="SVNTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTest2.cs" />
+    <Compile Include="BuildStateTests.cs" />
+    <Compile Include="NickNameProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XmppBot.Plugins.Deployments\XmppBot.Plugins.Deployments.csproj">
       <Project>{BA5A18FE-5F69-48AF-907C-A835120AF6E2}</Project>
       <Name>XmppBot.Plugins.Deployments</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XMPP_bot\XmppBot.csproj">
+      <Project>{5A73E507-2C67-48CA-BD24-CEA8898E9180}</Project>
+      <Name>XmppBot</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

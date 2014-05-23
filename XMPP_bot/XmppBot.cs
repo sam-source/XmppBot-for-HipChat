@@ -15,6 +15,8 @@ using agsXMPP.protocol.client;
 using agsXMPP.protocol.iq.roster;
 using agsXMPP.protocol.x.muc;
 
+using XMPP_bot.User;
+
 namespace XMPP_bot
 {
     class XmppBot
@@ -22,6 +24,13 @@ namespace XMPP_bot
         private static DirectoryCatalog _catalog = null;
         private static XmppClientConnection _client = null;
         private static Dictionary<string, string> _roster = new Dictionary<string, string>(20);
+
+        private static NickNameProvider NickNameProvider;
+        static XmppBot()
+        {
+            var fileWrapper = new BasicFileWrapper(Path.Combine(Environment.CurrentDirectory, "Data"), "NickNames.xml");
+            NickNameProvider = new NickNameProvider(fileWrapper);
+        }
 
         public void Stop()
         {
@@ -106,7 +115,7 @@ namespace XMPP_bot
                 Console.WriteLine("Message : {0} - from {1}", msg.Body, msg.From);
 
                 string user;
-                
+                string originalUserName;
                 if (msg.Type != MessageType.groupchat)
                 {
                     if (msg.From == null || msg.From.User == null) {
@@ -126,12 +135,42 @@ namespace XMPP_bot
                 if (user == ConfigurationManager.AppSettings["RoomNick"])
                     return;
 
+                originalUserName = user;
+                var nickName = NickNameProvider.GetName(user);
+
+                if (!string.IsNullOrWhiteSpace(nickName)) {
+                    user = nickName;
+                }
+
                 ParsedLine line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
 
                 switch (line.Command)
                 {
+                    case "where":
+                        if (line.Args.Length == 4 && line.Args[0] == "is" && line.Args[1] == "your"
+                            && line.Args[2] == "data" && line.Args[3] == "stored?") {
+                                SendMessage(msg.From, user + ", my data is stored here: " + Path.Combine(Environment.CurrentDirectory, "Data"), msg.Type);
+                        }
+                        return;
+                    case "call":
+                        if (line.Args.Length > 1 && line.Args[0] == "me") {
+                            string nick = "";
+                            for (int i = 1; i < line.Args.Length; i++) {
+                                if (i > 1) {
+                                    nick += " ";
+                                }
+                                nick += line.Args[i];
+                            }
+
+                            NickNameProvider.SaveName(originalUserName, nick);
+                            
+                            SendMessage(msg.From, "Ok " + nick, msg.Type);
+                        }
+
+                        return;
                     case "leave":
-                        SendMessage(msg.From, "Buh Bye...", msg.Type);
+                        SendMessage(msg.From, "If you insist... :'(", msg.Type);
+                        System.Threading.Thread.Sleep(2000);
                         Environment.Exit(1);
                         return;
 

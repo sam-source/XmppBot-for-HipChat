@@ -8,6 +8,8 @@ namespace XMPP_bot
     {
         public static void Main()
         {
+            System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+
             HostFactory.Run(x =>                                 
             {
                 x.Service<XmppBot>(s =>

@@ -9,7 +9,7 @@ using XmppBot.Plugins.Deployments;
 namespace XmppBot.Plugins.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class SVNTests
     {
 
         [TestMethod]

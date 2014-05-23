@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<result expand="changes,metadata,plan,vcsRevisions,artifacts,comments,labels,jiraIssues,stages" key="TNEXWEB-TNEWV45QALIGHT-2723" state="Successful" lifeCycleState="Finished" number="2723" id="31064166" continuable="false" onceOff="false" restartable="false" notRunYet="false" finished="true" successful="true">
+  <link href="http://bamboo.tessituranetwork.com:8085/rest/api/latest/result/TNEXWEB-TNEWV45QALIGHT-2723" rel="self" />
+  <plan key="TNEXWEB-TNEWV45QALIGHT" name="1-EXPRESSWEB - TNEW V45 QA - LITE" shortName="TNEW V45 QA - LITE" shortKey="TNEWV45QALIGHT" type="chain" enabled="true">
+    <planKey>
+      <key>TNEXWEB-TNEWV45QALIGHT</key>
+    </planKey>
+    <link href="http://bamboo.tessituranetwork.com:8085/rest/api/latest/plan/TNEXWEB-TNEWV45QALIGHT" rel="self"/>
+  </plan>
+  <planName>TNEW V45 QA - LITE</planName>
+  <projectName>
+    1-EXPRESSWEB
+  </projectName>
+  <buildResultKey>TNEXWEB-TNEWV45QALIGHT-2723</buildResultKey>
+  <planResultKey>
+    <key>TNEXWEB-TNEWV45QALIGHT-2723</key>
+    <entityKey>
+      <key>
+        TNEXWEB-TNEWV45QALIGHT
+      </key>
+    </entityKey>
+    <resultNumber>2723</resultNumber>
+  </planResultKey>
+  <buildState>
+    Successful
+  </buildState>
+  <buildNumber>2723</buildNumber>
+  <buildStartedTime>
+    2014-05-1
+    6T22:43:21.600-05:00
+  </buildStartedTime>
+  <prettyBuildStartedTime>
+    Fri, 16 May, 10:4
+    3 PM
+  </prettyBuildStartedTime>
+  <buildCompletedTime>
+    2014-05-16T22:47:13.003-05:00
+  </buildCompletedTime>
+  <buildCompletedDate>
+    2014-05-16T22:47:13.003-05:00
+  </buildCompletedDate>
+  <prettyBuildCompletedTime>
+    Fri, 16 May, 10:47 PM
+  </prettyBuildCompletedTime>
+  <buildDurationInSeconds>231</buildDurationInSeconds>
+  <buildDuration>
+    231403
+  </buildDuration>
+  <buildDurationDescription>3 minutes</buildDurationDescription>
+  <buildRelativeTime>
+    34 seconds ago
+  </buildRelativeTime>
+  <vcsRevisionKey>
+    15245
+  </vcsRevisionKey>
+  <vcsRevisions start-index="0" max-result="1" size="1"/>
+  <buildTestSummary>
+    No
+    tests found
+  </buildTestSummary>
+  <successfulTestCount>0</successfulTestCount>
+  <failedTestCount>
+    0
+  </failedTestCount>
+  <quarantinedTestCount>0</quarantinedTestCount>
+  <buildReason>
+    Manual run by &lt;a href=&quot;http://bamboo.tessituranetwork.com:8085/browse/user/smenard&quot;&gt;Sam Menard&lt;/a&gt;
+  </buildReason>
+  <reasonSummary>
+    Manual run by &lt;a href=&quot;http://bamboo.tessituranetwork.com:8085/browse/user/smenard&quot;&gt;Sam Menard&lt;/a&gt;
+  </reasonSummary>
+  <artifacts start-index="0" max-result="0" size="0"/>
+  <comments start-index="0" max-result="0" size="0"/>
+  <labels start-index="0" max-result="0" size="0"/>
+  <jiraIssues start-index="0" max-result="0" size="0"/>
+  <stages start-index="0" max-result="1" size="1"/>
+  <changes start-index="0" max-result="0" size="0"/>
+  <metadata start-index="0" max-result="2" size="2"/>
+</result>

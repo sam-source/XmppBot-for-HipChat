@@ -23,12 +23,12 @@ namespace XmppBot.Plugins.Deployments
         static BambooConnection()
         {
             PlanMapping = new Dictionary<string, string>();
-            PlanMapping.Add("tnew+qa", "TNEXWEB-TNEWV45QALIGHT");
+            PlanMapping.Add("tnew+qa", "TNEXWEB-TQOD");
             PlanMapping.Add("tnew+live", "TNEXWEB-TNEWV45LIVELIGHT");
-            PlanMapping.Add("tnew+qa+aws", "APRAMP-AWSV45QALITE");
-            PlanMapping.Add("tnew+live+aws", "APRAMP-AT4LLV");
-            PlanMapping.Add("tnst+qa", "TNEXWEB-TNEWV45QALIGHT");
-            PlanMapping.Add("tnst+live", "TNEXWEB-TNEWV45LIVELIGHT");
+            //PlanMapping.Add("tnew+qa+aws", "APRAMP-AWSV45QALITE");
+            //PlanMapping.Add("tnew+live+aws", "APRAMP-AT4LLV");
+            //PlanMapping.Add("tnst+qa", "TNEXWEB-TQOD");
+            //PlanMapping.Add("tnst+live", "TNEXWEB-TNEWV45LIVELIGHT");
         }
 
         private WebClient GetWebClient()
@@ -45,13 +45,15 @@ namespace XmppBot.Plugins.Deployments
         {
             var client = this.GetWebClient();
             
-            var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic";
+            var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic&bamboo.variable.externalOrgCode={1}";
 
             try {
                 var projectKey = this.GetPlanKey(args);
 
-                var url = string.Format(urlFormat, projectKey);
-                
+                var orgCode = args.Length > 3 ? args[3] : args[2];
+
+                var url = string.Format(urlFormat, projectKey, orgCode);
+
                 var result = client.UploadString(url, "");
 
                 var parser = new BambooResultParser();
@@ -59,7 +61,7 @@ namespace XmppBot.Plugins.Deployments
                 return parser.ParseQueueResult(result);
             }
             catch (Exception ex) {
-                return string.Format("There was an error while starting the build: {0}", ex);
+                return string.Format("There was an error while starting the build: {0}", ex.Message);
             }
         }
 
@@ -67,7 +69,7 @@ namespace XmppBot.Plugins.Deployments
         {
             var projectKey = string.Format("{0}+{1}", args[0].ToLower(), args[1].ToLower());
 
-            if (args.Length > 2) {
+            if (args.Length > 3) {
                 int temp;
                 if (!int.TryParse(args[2], out temp)) {
                     projectKey += "+" + args[2].ToLower();
@@ -95,7 +97,7 @@ namespace XmppBot.Plugins.Deployments
                 return parser.ParseBuildStatusResult(xml, buildNumber, planKey);
             }
             catch (Exception ex) {
-                return string.Format("Error while returning state: {0}", ex);
+                return string.Format("Error while returning state: {0} - (After two errors, I will stop checking the status.)", ex.Message);
             }
         }
     }

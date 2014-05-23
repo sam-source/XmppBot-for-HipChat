@@ -45,12 +45,22 @@ namespace XmppBot.Plugins.Deployments
             return Observable.Return(builder.GetBuildState(project, buildNumber));
         }
 
+        private static bool isBuilding = false;
+
         public IObservable<string> StartBuild(ParsedLine line, string user)
         {
+            if (isBuilding) {
+                return Observable.Return(string.Format("I can't do that {0}. There is a build already in progress.", user));
+            }
+
+            isBuilding = true;
+
             var builder = new BambooConnection();
 
             var project = builder.GetPlanKey(line.Args);
+
             var buildNumber = builder.StartBuild(line.Args);
+
             int buildNumberInt;
 
             if (!int.TryParse(buildNumber, out buildNumberInt)) {
@@ -64,16 +74,22 @@ namespace XmppBot.Plugins.Deployments
                     .TakeWhile(l => 
                         { 
                             buildState = builder.GetBuildState(project, buildNumber);
+
                             if (buildState.StartsWith("Build")) {
                                 return true;
                             }
-                            else {
-                                if (completedCount > 0) {
-                                    return false;
-                                }
-                                completedCount++;
-                                return true;
+                            if (buildState.StartsWith("Failed")) {
+                                isBuilding = false;
+                                return false;
                             }
+
+                            if (completedCount > 0) {
+                                isBuilding = false;
+                                return false;
+                            }
+                            
+                            completedCount++;
+                            return true;
                         })
                     .Select(l => string.Format(buildState));
 
