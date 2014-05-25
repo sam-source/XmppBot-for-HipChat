@@ -4,8 +4,7 @@ using XmppBot.Common;
 
 namespace XmppBot.Plugins.Conversation
 {
-    [System.ComponentModel.Composition.Export(typeof(IXmppBotPlugin))]
-    public class TuringPlugin : IXmppBotPlugin
+    public class TuringPlugin
     {
         public string Evaluate(ParsedLine line)
         {

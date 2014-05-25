@@ -55,24 +55,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicFileWrapper.cs" />
+    <Compile Include="CoreTasks.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="User\NickNameProvider.cs" />
+    <Compile Include="Tasks\CloseTask.cs" />
+    <Compile Include="Tasks\GetNicknameTask.cs" />
+    <Compile Include="Tasks\GetStorageLocationTask.cs" />
+    <Compile Include="Tasks\GiveTask.cs" />
+    <Compile Include="Tasks\HighFiveTask.cs" />
+    <Compile Include="Tasks\HugTask.cs" />
+    <Compile Include="Tasks\SetNicknameTask.cs" />
+    <Compile Include="Tasks\SmackTask.cs" />
     <Compile Include="XmppBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XmppBot.Common\XmppBot.Common.csproj">
       <Project>{7553588F-7628-4689-B02B-CC2F504F82C2}</Project>
       <Name>XmppBot.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XmppBot.Plugins.Deployments\XmppBot.Plugins.Deployments.csproj">
-      <Project>{ba5a18fe-5f69-48af-907c-a835120af6e2}</Project>
-      <Name>XmppBot.Plugins.Deployments</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XmppBot.Plugins\XmppBot.Plugins.csproj">
-      <Project>{b11e3f86-cea6-4ea6-b15f-7819c57e8a92}</Project>
-      <Name>XmppBot.Plugins</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

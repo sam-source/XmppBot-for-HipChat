@@ -100,5 +100,23 @@ namespace XmppBot.Plugins.Deployments
                 return string.Format("Error while returning state: {0} - (After two errors, I will stop checking the status.)", ex.Message);
             }
         }
+
+        public string DeployContent(string planKey, string orgCode, string buildType)
+        {
+
+            try {
+                var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic&bamboo.variable.orgCode={1}&bamboo.variable.buildType={2}";
+
+                var url = string.Format(urlFormat, planKey, orgCode.ToUpper(), buildType.ToUpper());
+                var client = this.GetWebClient();
+                var xml = client.UploadString(url, "");
+                var parser = new BambooResultParser();
+
+                return parser.ParseQueueResult(xml);
+            }
+            catch (Exception ex) {
+                return string.Format("Error while starting content deploy: {0} - (After two errors, I will stop checking the status.)", ex.Message);
+            }
+        }
     }
 }

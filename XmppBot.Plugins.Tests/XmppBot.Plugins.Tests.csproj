@@ -68,6 +68,10 @@
     <Compile Include="NickNameProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\XmppBot.Common\XmppBot.Common.csproj">
+      <Project>{7553588F-7628-4689-B02B-CC2F504F82C2}</Project>
+      <Name>XmppBot.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XmppBot.Plugins.Deployments\XmppBot.Plugins.Deployments.csproj">
       <Project>{BA5A18FE-5F69-48AF-907C-A835120AF6E2}</Project>
       <Name>XmppBot.Plugins.Deployments</Name>

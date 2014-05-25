@@ -33,11 +33,30 @@ namespace XmppBot.Common
         }
 
         public string Command { get; private set; }
+
         public string Raw { get; private set; }
+
         public string[] Args { get; private set; }
+
         public bool IsCommand { get; private set; }
+
         public string User { get; private set; }
 
         public string BotHandle { get; private set; }
+
+        private string innerNickName;
+
+        public string NickName
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(this.innerNickName) ? this.User : this.innerNickName;
+            }
+
+            set
+            {
+                this.innerNickName = value;
+            }
+        }
     }
 }

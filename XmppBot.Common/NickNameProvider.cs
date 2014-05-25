@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
 
-namespace XMPP_bot.User
+namespace XmppBot.Common
 {
     public class NickNameProvider
     {

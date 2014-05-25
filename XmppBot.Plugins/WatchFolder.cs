@@ -11,8 +11,7 @@ namespace XmppBot.Plugins
     /// Adds commands to tell the bot to watch a folder and send chat 
     /// messages when files are created, renamed, or deleted. 
     /// </summary>
-    [Export(typeof(IXmppBotSequencePlugin))]
-    public class WatchFolder : IXmppBotSequencePlugin
+    public class WatchFolder
     {
         // This will act as a way to funnel unwatch requests into the observable streams
         private readonly Subject<string> _unwatch = new Subject<string>();

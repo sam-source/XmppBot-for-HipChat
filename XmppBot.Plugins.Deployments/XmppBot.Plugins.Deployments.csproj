@@ -57,7 +57,7 @@
   <ItemGroup>
     <Compile Include="BambooConnection.cs" />
     <Compile Include="BambooResultParser.cs" />
-    <Compile Include="DeployPlugin.cs" />
+    <Compile Include="BambooPlugin.cs" />
     <Compile Include="TagCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

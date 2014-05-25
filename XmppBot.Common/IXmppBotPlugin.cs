@@ -1,8 +1,14 @@
-﻿namespace XmppBot.Common
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace XmppBot.Common
 {
     public interface IXmppBotPlugin
     {
-        string Evaluate(ParsedLine line);
         string Name { get; }
+
+        IEnumerable<string> TaskKeys { get; }
+
+        string ExecuteTask(ParsedLine taskInfo);
     }
 }

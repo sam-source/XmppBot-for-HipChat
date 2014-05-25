@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using XMPP_bot;
-using XMPP_bot.User;
+using XmppBot.Common;
 
 namespace XmppBot.Plugins.Tests
 {

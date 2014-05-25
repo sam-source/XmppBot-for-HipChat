@@ -11,11 +11,24 @@ using XmppBot.Common;
 namespace XmppBot.Plugins.Deployments
 {
     [System.ComponentModel.Composition.Export(typeof(IXmppBotSequencePlugin))]
-    public class DeployPlugin : IXmppBotSequencePlugin
+    public class BambooPlugin : IXmppBotSequencePlugin
     {
-        public IObservable<string> Evaluate(ParsedLine line)
+        public BambooPlugin()
         {
-            if (!line.IsCommand || !line.Command.ToLower().StartsWith("build")) {
+            var temp = new List<string>();
+
+            temp.Add("build");
+            temp.Add("get-buildstatus");
+            temp.Add("deploy-content");
+
+            this.TaskKeys = temp;
+        }
+
+        public IEnumerable<string> TaskKeys { get; private set; }
+
+        public IObservable<string> ExecuteTask(ParsedLine line)
+        {
+            if (!line.IsCommand || (!line.Command.ToLower().StartsWith("build") && !line.Command.ToLower().StartsWith("bamboo"))) {
                 return null;
             }
 
@@ -29,10 +42,72 @@ namespace XmppBot.Plugins.Deployments
                         return this.StartBuild(line, user);
                     case "build-status":
                         return this.CheckBuildStatus(line, user);
+                    case "bamboo-deploy-content":
+                        return this.DeployContent(line, user);
                 }
             }
 
             return Observable.Return(help);
+        }
+
+        private static bool isDeploying = false;
+
+        private IObservable<string> DeployContent(ParsedLine line, string user)
+        {
+            var project = "CB-TNEWRAMPQA";
+
+            if (isDeploying) {
+                return Observable.Return(string.Format("I can't do that {0}. There is a build already in progress.", user));
+            }
+
+            isDeploying = true;
+
+            var builder = new BambooConnection();
+
+            var buildNumber = builder.DeployContent(project, line.Args[1], line.Args[0]);
+
+            int buildNumberInt;
+
+            if (!int.TryParse(buildNumber, out buildNumberInt)) {
+                return Observable.Return(buildNumber);
+            }
+
+            string buildState = null;
+            int completedCount = 0;
+            IObservable<string> seq =
+                Observable.Interval(TimeSpan.FromSeconds(10))
+                    .TakeWhile(l =>
+                    {
+                        buildState = builder.GetBuildState(project, buildNumber);
+
+                        if (buildState == "Successful") {
+                            isDeploying = false;
+                            return false;
+                        }
+
+                        if (buildState.StartsWith("Failed")) {
+                            isDeploying = false;
+                            return false;
+                        }
+
+                        if (buildState.StartsWith("Build")) {
+                            return true;
+                        }
+
+                        if (completedCount > 3) {
+                            isDeploying = false;
+                            return false;
+                        }
+
+                        completedCount++;
+                        return true;
+                    })
+                    .Select(l => string.Format(buildState));
+
+            return
+                Observable.Return(string.Format("{0}, I have started the bamboo build. The build number is {1}", user, buildNumber))
+                    .Concat(seq)
+                    .Concat(Observable.Return(string.Format("Build {0} finished", buildNumber)));
         }
 
         public IObservable<string> CheckBuildStatus(ParsedLine line, string user)
@@ -103,7 +178,7 @@ namespace XmppBot.Plugins.Deployments
         {
             get
             {
-                return "Deployer";
+                return "bamboo";
             }
         }
     }

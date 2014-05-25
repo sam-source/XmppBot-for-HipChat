@@ -9,13 +9,13 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+
+using XmppBot;
 using XmppBot.Common;
 using agsXMPP;
 using agsXMPP.protocol.client;
 using agsXMPP.protocol.iq.roster;
 using agsXMPP.protocol.x.muc;
-
-using XMPP_bot.User;
 
 namespace XMPP_bot
 {
@@ -24,13 +24,6 @@ namespace XMPP_bot
         private static DirectoryCatalog _catalog = null;
         private static XmppClientConnection _client = null;
         private static Dictionary<string, string> _roster = new Dictionary<string, string>(20);
-
-        private static NickNameProvider NickNameProvider;
-        static XmppBot()
-        {
-            var fileWrapper = new BasicFileWrapper(Path.Combine(Environment.CurrentDirectory, "Data"), "NickNames.xml");
-            NickNameProvider = new NickNameProvider(fileWrapper);
-        }
 
         public void Stop()
         {
@@ -110,14 +103,12 @@ namespace XMPP_bot
 
         static void xmpp_OnMessage(object sender, Message msg)
         {
-            if (!String.IsNullOrEmpty(msg.Body))
-            {
+            if (!String.IsNullOrEmpty(msg.Body)) {
                 Console.WriteLine("Message : {0} - from {1}", msg.Body, msg.From);
 
                 string user;
-                string originalUserName;
-                if (msg.Type != MessageType.groupchat)
-                {
+
+                if (msg.Type != MessageType.groupchat) {
                     if (msg.From == null || msg.From.User == null) {
                         user = "Unknown User";
                     }
@@ -127,80 +118,87 @@ namespace XMPP_bot
                         }
                     }
                 }
-                else
-                {
+                else {
                     user = msg.From.Resource;
                 }
 
-                if (user == ConfigurationManager.AppSettings["RoomNick"])
+                if (user == ConfigurationManager.AppSettings["RoomNick"]) {
                     return;
-
-                originalUserName = user;
-                var nickName = NickNameProvider.GetName(user);
-
-                if (!string.IsNullOrWhiteSpace(nickName)) {
-                    user = nickName;
                 }
 
-                ParsedLine line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
+                var line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
+                line.NickName = CoreTasks.GetNickName(user);
 
-                switch (line.Command)
-                {
-                    case "where":
-                        if (line.Args.Length == 4 && line.Args[0] == "is" && line.Args[1] == "your"
-                            && line.Args[2] == "data" && line.Args[3] == "stored?") {
-                                SendMessage(msg.From, user + ", my data is stored here: " + Path.Combine(Environment.CurrentDirectory, "Data"), msg.Type);
-                        }
-                        return;
-                    case "call":
-                        if (line.Args.Length > 1 && line.Args[0] == "me") {
-                            string nick = "";
-                            for (int i = 1; i < line.Args.Length; i++) {
-                                if (i > 1) {
-                                    nick += " ";
-                                }
-                                nick += line.Args[i];
-                            }
-
-                            NickNameProvider.SaveName(originalUserName, nick);
-                            
-                            SendMessage(msg.From, "Ok " + nick, msg.Type);
+                if (string.Equals(line.Command, "help", StringComparison.InvariantCultureIgnoreCase)) {
+                    if (line.Args != null && line.Args.Length == 1) {
+                        if (line.Args[0] == "core") {
+                            SendMessage(msg.From, "------------ Core Tasks ------------", msg.Type);
+                            System.Threading.Thread.Sleep(100);
+                            SendMessage(msg.From, CoreTasks.GetListOfTasks(), msg.Type);
+                            return;
                         }
 
+                        var plugin = Plugins.FirstOrDefault(
+                            p => string.Equals(p.Name, line.Args[0], StringComparison.InvariantCultureIgnoreCase));
+
+                        if (plugin != null) {
+                            var tasks =string.Join("\n", plugin.TaskKeys.Select(k => plugin.Name + "-" + k).ToArray());
+                            SendMessage(msg.From, string.Format("------------ Plugin ({0}) Tasks ------------", plugin.Name), msg.Type);
+                            System.Threading.Thread.Sleep(100);
+                            SendMessage(msg.From, tasks, msg.Type);
+                            return;
+                        }
+
+                        var seqPlugin =
+                            SequencePlugins.FirstOrDefault(
+                                p => string.Equals(p.Name, line.Args[0], StringComparison.InvariantCultureIgnoreCase));
+
+                        if (seqPlugin != null) {
+                            var tasks = string.Join("\n", seqPlugin.TaskKeys.Select(k => seqPlugin.Name + "-" + k).ToArray());
+                            SendMessage(msg.From, string.Format("------------ Plugin ({0}) Tasks ------------", seqPlugin.Name), msg.Type);
+                            System.Threading.Thread.Sleep(100);
+                            SendMessage(msg.From, tasks, msg.Type);
+                            return;
+                        }
+
+                        SendMessage(msg.From, string.Format("Plugin ({0}) not found.", line.Args[0]), msg.Type);
                         return;
-                    case "leave":
-                        SendMessage(msg.From, "If you insist... :'(", msg.Type);
-                        System.Threading.Thread.Sleep(2000);
-                        Environment.Exit(1);
+                    }
+                    else {
+                        SendMessage(msg.From, "------------ Core Tasks ------------", msg.Type);
+                        System.Threading.Thread.Sleep(100);
+                        SendMessage(msg.From, CoreTasks.GetListOfTasks(), msg.Type);
+                        System.Threading.Thread.Sleep(100);
+                        SendMessage(msg.From, "------------ Plugin Tasks ------------", msg.Type);
+                        System.Threading.Thread.Sleep(100);
+                        var tasks = string.Join("\n", PluginTaskKeys.Select(kvp => kvp.Key).ToArray());
+                        SendMessage(msg.From, tasks, msg.Type);
+
+                        System.Threading.Thread.Sleep(100);
+                        tasks = string.Join("\n", SequencePluginTaskKeys.Select(kvp => kvp.Key).ToArray());
+                        SendMessage(msg.From, tasks, msg.Type);
                         return;
-
-                    case "reload":
-                        SendMessage(msg.From, LoadPlugins(), msg.Type);
-                        break;
-
-                    default:
-                        Task.Factory.StartNew(() =>
-                                              Parallel.ForEach(Plugins,
-                                                  plugin => SendMessage(msg.From, plugin.Evaluate(line), msg.Type)
-                                                  ));
-
-                        Task.Factory.StartNew(() =>
-                                              Parallel.ForEach(SequencePlugins,
-                                                  plugin => SendSequence(msg.From, plugin.Evaluate(line), msg.Type)
-                                                  ));
-
-                        Task.Factory.StartNew(() =>
-                                              Parallel.ForEach(MultiRoomPlugins,
-                                                  plugin =>
-                                                  {
-                                                      var temp = plugin.Evaluate(line, msg.From.Bare);
-                                                      if (temp == null) {
-                                                          return;
-                                                      }
-                                                      SendMessage(new Jid(temp.RoomId), temp.Message, msg.Type);
-                                                  }));
-                        break;
+                    }
                 }
+
+                if (CoreTasks.ContainsCommand(line)) {
+                    SendMessage(msg.From, CoreTasks.ExecuteCommand(line), msg.Type);
+                    return;
+                }
+
+                if (PluginTaskKeys.ContainsKey(line.Command)) {
+                    Task.Factory.StartNew(
+                        () => SendMessage(msg.From, PluginTaskKeys[line.Command].ExecuteTask(line), msg.Type));
+                    return;
+                }
+
+                if (SequencePluginTaskKeys.ContainsKey(line.Command)) {
+                    Task.Factory.StartNew(
+                        () => SendSequence(msg.From, SequencePluginTaskKeys[line.Command].ExecuteTask(line), msg.Type));
+                    return;
+                }
+
+                SendMessage(msg.From, "Unknown command.", msg.Type);
             }
         }
 
@@ -231,21 +229,51 @@ namespace XMPP_bot
         [ImportMany(AllowRecomposition = true)]
         public static IEnumerable<IXmppBotSequencePlugin> SequencePlugins { get; set; }
 
-        [ImportMany(AllowRecomposition = true)]
-        public static IEnumerable<IXmppBotMultiRoomPlugin> MultiRoomPlugins { get; set; }
+        public static Dictionary<string, IXmppBotPlugin> PluginTaskKeys { get; set; }
+
+        public static Dictionary<string, IXmppBotSequencePlugin> SequencePluginTaskKeys { get; set; }
 
         private static string LoadPlugins()
         {
             var container = new CompositionContainer(_catalog);
             Plugins = container.GetExportedValues<IXmppBotPlugin>();
             SequencePlugins = container.GetExportedValues<IXmppBotSequencePlugin>();
-            MultiRoomPlugins = container.GetExportedValues<IXmppBotMultiRoomPlugin>();
 
-            StringBuilder builder = new StringBuilder();
+            PluginTaskKeys = new Dictionary<string, IXmppBotPlugin>();
+
+            foreach (var plugin in Plugins) {
+                foreach (var taskKey in plugin.TaskKeys) {
+                    var key = plugin.Name + "-" + taskKey;
+
+                    if (PluginTaskKeys.ContainsKey(key)) {
+                        return "Duplicate task found. Loading Stopped. " + key;
+                    }
+
+                    PluginTaskKeys.Add(plugin.Name + "-" + taskKey, plugin);
+                }
+            }
+
+            SequencePluginTaskKeys = new Dictionary<string, IXmppBotSequencePlugin>();
+
+            foreach (var plugin in SequencePlugins) {
+                foreach (var taskKey in plugin.TaskKeys) {
+                    var key = plugin.Name + "-" + taskKey;
+
+                    if (SequencePluginTaskKeys.ContainsKey(key)) {
+                        return "Duplicate task found. Loading Stopped. " + key;
+                    }
+
+                    SequencePluginTaskKeys.Add(key, plugin);
+                }
+            }
+
+            var builder = new StringBuilder();
+            
             builder.AppendLine("Loaded the following plugins");
+
             foreach (var part in _catalog.Parts)
             {
-                builder.AppendFormat("\t{0}\n", part.ToString());
+                builder.AppendFormat("\t{0}\n", part);
             }
 
             return builder.ToString();

@@ -9,8 +9,7 @@ namespace XmppBot.Plugins
     /// Adds a command to tell the bot to count down from a specified number of seconds to zero
     /// by a specified interval. 
     /// </summary>
-    [Export(typeof(IXmppBotSequencePlugin))]
-    public class CountdownTimer : IXmppBotSequencePlugin
+    public class CountdownTimer 
     {
         public IObservable<string> Evaluate(ParsedLine line)
         {
