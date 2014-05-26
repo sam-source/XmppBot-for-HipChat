@@ -4,72 +4,23 @@ using System.Text;
 
 using TND;
 
-namespace XmppBot.Plugins.Salesforce
+using XmppBot.Common;
+
+namespace XmppBot.Plugins.Salesforce.Tasks
 {
-    internal class TNDGets
+    class GetQueryTask : SimpleTaskBase
     {
-        public string Domain(string user, string[] args)
-        {
-            var client = new TND.Client();
-            var records = client.GetTnewOpportunities(args[0], "TNEW_DNS_Subdomain__c");
+        public GetQueryTask(string pluginName)
+            : base(pluginName, "get-query") { }
 
-            if (records == null) {
-                return user + ", that org code did not return any results";
-            }
-
-            var record = records.FirstOrDefault();
-
-            if (record == null) {
-                return user + ", that org code did not return any results";
-            }
-
-            return string.Format("{0} the domain for {1} is {2}", user, args[0], record.TNEW_DNS_Subdomain__c);
-        }
-
-        public string Api(string user, string[] args)
-        {
-            var client = new TND.Client();
-            var records = client.GetTnewOpportunities(args[0], "TNEW_Test_API_URL__c", "TNEW_Live_API_URL__c");
-
-            if (records == null) {
-                return user + ", that org code did not return any results";
-            }
-
-            var record = records.FirstOrDefault();
-
-            if (record == null) {
-                return user + ", that org code did not return any results";
-            }
-            
-            return string.Format("{0} the live api for {1} is {2} and the test api is {3}", user, args[0], record.TNEW_Live_API_URL__c, record.TNEW_Test_API_URL__c);
-        }
-
-        public string Version(string user, string[] args)
-        {
-            var client = new TND.Client();
-            var records = client.GetTnewOpportunities(args[0], "TNEW_Version_Live__c", "TNEW_Version_QA__c");
-
-            if (records == null) {
-                return user + ", that org code did not return any results";
-            }
-
-            var record = records.FirstOrDefault();
-
-            if (record == null) {
-                return user + ", that org code did not return any results";
-            }
-
-            return string.Format("{0} the live version for {1} is {2} and the test version is {3}", user, args[0], record.TNEW_Version_Live__c, record.TNEW_Version_QA__c);
-        }
-
-        public string Query (string user, string[]  args)
+        protected override string ExecuteTask(ParsedLine taskInfo)
         {
             //tnd-get-query type=tnew version=4.5 location=ramp config=live
 
-            var client = new TND.TNEWProvider();
-
+            var client = new TNEWProvider();
+            var args = taskInfo.Args;
             var type = args.FirstOrDefault(a => a.StartsWith("type"));
-            
+
             ApplicationType appType = ApplicationType.TNEW;
 
             if (!string.IsNullOrWhiteSpace(type)) {
@@ -80,7 +31,7 @@ namespace XmppBot.Plugins.Salesforce
 
             type = args.FirstOrDefault(a => a.StartsWith("version"));
 
-            if(string.IsNullOrWhiteSpace(type)) {
+            if (string.IsNullOrWhiteSpace(type)) {
                 return "Filter 'version' is required. Example: 'version=4.5'";
             }
 
@@ -95,7 +46,7 @@ namespace XmppBot.Plugins.Salesforce
             TND.ConfigurationType configType = ConfigurationType.QA;
 
             var configTypeTemp = type.Substring(type.IndexOf("=") + 1);
-            
+
             if (string.Equals(configTypeTemp, "live", StringComparison.InvariantCultureIgnoreCase)) {
                 configType = ConfigurationType.Live;
             }
@@ -106,7 +57,7 @@ namespace XmppBot.Plugins.Salesforce
             sb.Append("/quote ");
             sb.Append("Org Code, Machine IPs, Live Version, QA Version, Web Server Name, Location\n");
             sb.Append("--------------------------------------------------------------------------\n");
-            
+
             foreach (var record in records) {
                 sb.AppendFormat(
                     "{0}, {1}, {2}, {3}, {4}, {5}\n",
@@ -125,6 +76,30 @@ namespace XmppBot.Plugins.Salesforce
             sb.Append("\n--------------------------------------------------------------------------");
 
             return sb.ToString();
+        }
+
+        protected override string HelpDescription
+        {
+            get
+            {
+                return "";
+            }
+        }
+
+        protected override string HelpExample
+        {
+            get
+            {
+                return "";
+            }
+        }
+
+        protected override string HelpFormat
+        {
+            get
+            {
+                return "";
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 using XmppBot.Common;
 
@@ -7,22 +8,37 @@ namespace XMPP_bot.Tasks
 {
     class GetStorageLocationTask : SimpleTaskBase
     {
-        public override string Name
+        public GetStorageLocationTask()
+            : base(null, "get-storagelocation") { }
+
+        protected override string ExecuteTask(ParsedLine taskInfo)
+        {
+            return taskInfo.User + ", my data is stored here: "
+                            + Path.Combine(Environment.CurrentDirectory, "Data");
+        }
+
+        protected override string HelpDescription
         {
             get
             {
-                return "get-storagelocation";
+                return "This command will respond with the location where the bot stores data. This command is for internal diagnostics.";
             }
         }
 
-        public override string Execute(ParsedLine taskInfo)
+        protected override string HelpExample
         {
-            if (!this.Match(taskInfo.Command)) {
-                return "Invalid command.";
+            get
+            {
+                return "!get-storagelocation";
             }
+        }
 
-            return taskInfo.User + ", my data is stored here: "
-                            + Path.Combine(Environment.CurrentDirectory, "Data");
+        protected override string HelpFormat
+        {
+            get
+            {
+                return "The command has no parameters.";
+            }
         }
     }
 }

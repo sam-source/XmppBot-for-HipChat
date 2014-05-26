@@ -6,26 +6,38 @@ namespace XMPP_bot.Tasks
     {
         private NickNameProvider provider;
 
-        public GetNicknameTask(NickNameProvider provider)
+        public GetNicknameTask(NickNameProvider provider) : base(null, "get-nickname")
         {
             this.provider = provider;
         }
 
-        public override string Name
+        protected override string ExecuteTask(ParsedLine taskInfo)
+        {
+            return this.provider.GetName(taskInfo.User);
+        }
+
+        protected override string HelpDescription
         {
             get
             {
-                return "get-nickname";
+                return "This command will retrieve the currently set nickname for your user.";
             }
         }
 
-        public override string Execute(ParsedLine taskInfo)
+        protected override string HelpExample
         {
-            if (!this.Match(taskInfo.Command)) {
-                return "Invalid command.";
+            get
+            {
+                return "!" + this.FullName;
             }
+        }
 
-            return this.provider.GetName(taskInfo.User);
+        protected override string HelpFormat
+        {
+            get
+            {
+                return "The command does not have any parameters.";
+            }
         }
     }
 }

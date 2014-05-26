@@ -1,22 +1,38 @@
-﻿using System;
-
-using XmppBot.Common;
+﻿using XmppBot.Common;
 
 namespace XMPP_bot.Tasks
 {
     class SmackTask : SimpleTaskBase
     {
-        public override string Name
+        public SmackTask() : base(null, "smack") { }
+
+        protected override string ExecuteTask(ParsedLine taskInfo)
+        {
+            return string.Format("/me smacks {0} around with a large trout.", taskInfo.Args[0]);
+        }
+
+        protected override string HelpDescription
         {
             get
             {
-                return "smack";
+                return "This command is used to alert another hipchat user if the user has notifications turned on.";
             }
         }
 
-        public override string Execute(ParsedLine taskInfo)
+        protected override string HelpExample
         {
-            return string.Format("/me smacks {0} around with a large trout.", taskInfo.Args[0]);
+            get
+            {
+                return "!smack @smenard";
+            }
+        }
+
+        protected override string HelpFormat
+        {
+            get
+            {
+                return "This command has one parameter. The parameter is the username of another hipchat user.";
+            }
         }
     }
 }

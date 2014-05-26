@@ -1,13 +1,19 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 
-namespace XmppBot.Plugins.Salesforce
+using XmppBot.Common;
+
+namespace XmppBot.Plugins.Salesforce.Tasks.Fixes
 {
-    internal class TNDFixes
+    class FixMachineIPsTask : SimpleTaskBase
     {
-        public string MachineIPs(string user, string[] args)
-        {
-            var client = new TND.Client();
+        public FixMachineIPsTask(string pluginName) : base(pluginName, "fix-machineips") { }
 
+        protected override string ExecuteTask(ParsedLine taskInfo)
+        {
+            var user = taskInfo.NickName;
+            var args = taskInfo.Args;
+            var client = new TND.Client();
             var records = client.GetTnewOpportunities(args[0], "TNEW_Machine_IPs__c");
 
             if (records == null || records.Count == 0) {
@@ -39,6 +45,21 @@ namespace XmppBot.Plugins.Salesforce
             var op = tnewClient.GetRecord(args[0]);
 
             return string.Format("{0} the record was saved. {1}", user, string.Join(",", op.MachineIPAddresses));
+        }
+
+        protected override string HelpDescription
+        {
+            get { return ""; }
+        }
+
+        protected override string HelpExample
+        {
+            get { return ""; }
+        }
+
+        protected override string HelpFormat
+        {
+            get { return ""; }
         }
     }
 }

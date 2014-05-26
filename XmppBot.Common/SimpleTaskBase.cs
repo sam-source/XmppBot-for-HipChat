@@ -1,16 +1,24 @@
-﻿using System;
-
-namespace XmppBot.Common
+﻿namespace XmppBot.Common
 {
-    public abstract class SimpleTaskBase
+    public abstract class SimpleTaskBase : BotTaskBase
     {
-        public abstract string Name { get; }
-
-        public abstract string Execute(ParsedLine taskInfo);
-
-        public bool Match(string commandName)
+        public SimpleTaskBase(string pluginName, string commandName) : base(pluginName, commandName)
         {
-            return string.Equals(commandName.Trim(), this.Name, StringComparison.InvariantCultureIgnoreCase);
         }
+
+        public string Execute(ParsedLine taskInfo)
+        {
+            if (!this.IsMatch(taskInfo)) {
+                return "Invalid command.\n" + this.GetHelp();
+            }
+
+            if (!this.IsValid(taskInfo)) {
+                return "Invalid command arguments.\n" + this.GetHelp();
+            }
+
+            return this.ExecuteTask(taskInfo);
+        }
+
+        protected abstract string ExecuteTask(ParsedLine taskInfo);
     }
 }

@@ -7,28 +7,22 @@ namespace XMPP_bot.Tasks
         private NickNameProvider provider;
 
         public SetNicknameTask(NickNameProvider provider)
+            : base(null, "set-nickname")
         {
             this.provider = provider;
         }
 
-        public override string Name
-        {
-            get
-            {
-                return "set-nickname";
-            }
-        }
-
-        public override string Execute(ParsedLine taskInfo)
+        protected override bool IsValid(ParsedLine taskInfo)
         {
             if (this.IsMissingArgs(taskInfo)) {
-                return this.GetHelpString();
+                return true;
             }
 
-            if (!this.Match(taskInfo.Command)) {
-                return "Invalid command.";
-            }
+            return false;
+        }
 
+        protected override string ExecuteTask(ParsedLine taskInfo)
+        {
             var nickname = string.Join(" ", taskInfo.Args);
 
             this.provider.SaveName(taskInfo.User, nickname);
@@ -36,9 +30,28 @@ namespace XMPP_bot.Tasks
             return string.Format("Okay {0}, I will call you {1}", taskInfo.User, nickname);
         }
 
-        private string GetHelpString()
+        protected override string HelpDescription
         {
-            return "Invalid Command.\nCommand format: set-nickname [name]( [name])";
+            get
+            {
+                return "This command allows you to assign a nickname to your user. The bot will replace your hipchat name with the nickname when addressing you.";
+            }
+        }
+
+        protected override string HelpExample
+        {
+            get
+            {
+                return "!set-nickname Number One";
+            }
+        }
+
+        protected override string HelpFormat
+        {
+            get
+            {
+                return "A nickname can be one or more names. The names are delimited with the space character.";
+            }
         }
 
         private bool IsMissingArgs(ParsedLine taskInfo)

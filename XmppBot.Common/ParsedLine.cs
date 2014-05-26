@@ -30,9 +30,19 @@ namespace XmppBot.Common
 
             this.Command = parts[0];
             this.Args = parts.Skip(1).ToArray();
+
+            parts = this.Command.Split('-');
+
+            if (parts.Length == 0) {
+                return;
+            }
+
+            this.PreCommand = parts[0];
         }
 
         public string Command { get; private set; }
+
+        public string PreCommand { get; private set; }
 
         public string Raw { get; private set; }
 

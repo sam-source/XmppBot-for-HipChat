@@ -101,6 +101,96 @@ namespace XMPP_bot
             }
         }
 
+        private static void ProcessHelp(ParsedLine line, Message msg)
+        {
+            string tasks;
+            int sleepTime = 150;
+
+            if (line.Args.Length == 0) {
+                SendMessage(msg.From, "------------ Core Tasks ------------", msg.Type);
+                System.Threading.Thread.Sleep(sleepTime);
+                SendMessage(msg.From, CoreTasks.GetListOfTasks(), msg.Type);
+                System.Threading.Thread.Sleep(sleepTime);
+                SendMessage(msg.From, "------------ Available Plugins ------------", msg.Type);
+                System.Threading.Thread.Sleep(sleepTime);
+                tasks = string.Join("\n", Plugins.Select(p => p.Name).ToArray());
+                SendMessage(msg.From, tasks, msg.Type);
+
+                System.Threading.Thread.Sleep(sleepTime);
+                tasks = string.Join("\n", SequencePlugins.Select(p => p.Name).ToArray());
+                SendMessage(msg.From, tasks, msg.Type);
+                return;
+            }
+
+            var argument = line.Args[0];
+
+            bool pluginFound =
+                Plugins.Any(p => string.Equals(argument, p.Name, StringComparison.InvariantCultureIgnoreCase)) ||
+                SequencePlugins.Any(p => string.Equals(argument, p.Name, StringComparison.InvariantCultureIgnoreCase));
+        
+            if (!pluginFound && string.Equals(argument, "core", StringComparison.InvariantCultureIgnoreCase)) {
+                SendMessage(msg.From, "------------ Core Commands ------------", msg.Type);
+                System.Threading.Thread.Sleep(sleepTime);
+                SendMessage(msg.From, CoreTasks.GetListOfTasks(), msg.Type);
+                return;
+            }
+
+            string header = "";
+
+            if (!pluginFound && CoreTasks.GetTask(argument) != null) {
+                header = string.Format("------------ Core ({0}) Command ------------", argument);
+                SendMessage(msg.From, header, msg.Type);
+                System.Threading.Thread.Sleep(sleepTime);
+                SendMessage(msg.From, CoreTasks.GetTask(argument).GetHelp(), msg.Type);
+                return;
+            }
+
+            XmppBotPluginBase plugin;
+            XmppBotSequencePluginBase sequencePlugin;
+            BotTaskBase pluginTask;
+            
+            tasks = "";
+            string pluginName;
+            bool isTask = argument.Contains("-");
+
+            pluginName = isTask ? argument.Split('-')[0] : argument;
+
+            plugin = Plugins.FirstOrDefault(p => string.Equals(p.Name, pluginName, StringComparison.InvariantCultureIgnoreCase));
+            sequencePlugin = SequencePlugins.FirstOrDefault(p => string.Equals(p.Name, pluginName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (plugin != null) {
+                if (isTask) {
+                    pluginTask = plugin.GetTask(argument);
+                    tasks = pluginTask.GetHelp();
+                    header = string.Format("------------ Command ({0}) Help ------------", pluginTask.FullName);
+                }
+                else {
+                    tasks = string.Join("\n", plugin.TaskKeys);
+                    header = string.Format("------------ Plugin ({0}) Commands ------------", plugin.Name);
+                }
+            }
+
+            if (sequencePlugin != null) {
+                if (isTask) {
+                    pluginTask = sequencePlugin.GetTask(argument);
+                    tasks = pluginTask.GetHelp();
+                    header = string.Format("------------ Command ({0}) Help ------------", pluginTask.FullName);
+                } else {
+                    tasks = string.Join("\n", sequencePlugin.TaskKeys);
+                    header = string.Format("------------ Plugin ({0}) Commands ------------", sequencePlugin.Name);
+                }
+            }
+
+            if (plugin == null && sequencePlugin == null) {
+                SendMessage(msg.From, "Help information not found.", msg.Type);
+                return;
+            }
+
+            SendMessage(msg.From, header, msg.Type);
+            System.Threading.Thread.Sleep(sleepTime);
+            SendMessage(msg.From, tasks, msg.Type);
+        }
+
         static void xmpp_OnMessage(object sender, Message msg)
         {
             if (!String.IsNullOrEmpty(msg.Body)) {
@@ -129,56 +219,9 @@ namespace XMPP_bot
                 var line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
                 line.NickName = CoreTasks.GetNickName(user);
 
-                if (string.Equals(line.Command, "help", StringComparison.InvariantCultureIgnoreCase)) {
-                    if (line.Args != null && line.Args.Length == 1) {
-                        if (line.Args[0] == "core") {
-                            SendMessage(msg.From, "------------ Core Tasks ------------", msg.Type);
-                            System.Threading.Thread.Sleep(100);
-                            SendMessage(msg.From, CoreTasks.GetListOfTasks(), msg.Type);
-                            return;
-                        }
-
-                        var plugin = Plugins.FirstOrDefault(
-                            p => string.Equals(p.Name, line.Args[0], StringComparison.InvariantCultureIgnoreCase));
-
-                        if (plugin != null) {
-                            var tasks =string.Join("\n", plugin.TaskKeys.Select(k => plugin.Name + "-" + k).ToArray());
-                            SendMessage(msg.From, string.Format("------------ Plugin ({0}) Tasks ------------", plugin.Name), msg.Type);
-                            System.Threading.Thread.Sleep(100);
-                            SendMessage(msg.From, tasks, msg.Type);
-                            return;
-                        }
-
-                        var seqPlugin =
-                            SequencePlugins.FirstOrDefault(
-                                p => string.Equals(p.Name, line.Args[0], StringComparison.InvariantCultureIgnoreCase));
-
-                        if (seqPlugin != null) {
-                            var tasks = string.Join("\n", seqPlugin.TaskKeys.Select(k => seqPlugin.Name + "-" + k).ToArray());
-                            SendMessage(msg.From, string.Format("------------ Plugin ({0}) Tasks ------------", seqPlugin.Name), msg.Type);
-                            System.Threading.Thread.Sleep(100);
-                            SendMessage(msg.From, tasks, msg.Type);
-                            return;
-                        }
-
-                        SendMessage(msg.From, string.Format("Plugin ({0}) not found.", line.Args[0]), msg.Type);
-                        return;
-                    }
-                    else {
-                        SendMessage(msg.From, "------------ Core Tasks ------------", msg.Type);
-                        System.Threading.Thread.Sleep(100);
-                        SendMessage(msg.From, CoreTasks.GetListOfTasks(), msg.Type);
-                        System.Threading.Thread.Sleep(100);
-                        SendMessage(msg.From, "------------ Plugin Tasks ------------", msg.Type);
-                        System.Threading.Thread.Sleep(100);
-                        var tasks = string.Join("\n", PluginTaskKeys.Select(kvp => kvp.Key).ToArray());
-                        SendMessage(msg.From, tasks, msg.Type);
-
-                        System.Threading.Thread.Sleep(100);
-                        tasks = string.Join("\n", SequencePluginTaskKeys.Select(kvp => kvp.Key).ToArray());
-                        SendMessage(msg.From, tasks, msg.Type);
-                        return;
-                    }
+                if (line.Command == "help") {
+                    ProcessHelp(line, msg);
+                    return;
                 }
 
                 if (CoreTasks.ContainsCommand(line)) {
@@ -186,15 +229,19 @@ namespace XMPP_bot
                     return;
                 }
 
-                if (PluginTaskKeys.ContainsKey(line.Command)) {
+                var pluginToExecute = Plugins.FirstOrDefault(p => p.Name == line.PreCommand);
+
+                if (pluginToExecute != null) {
                     Task.Factory.StartNew(
-                        () => SendMessage(msg.From, PluginTaskKeys[line.Command].ExecuteTask(line), msg.Type));
+                        () => SendMessage(msg.From, pluginToExecute.ExecuteTask(line), msg.Type));
                     return;
                 }
 
-                if (SequencePluginTaskKeys.ContainsKey(line.Command)) {
+                var sequencePluginToExecute = SequencePlugins.FirstOrDefault(p => p.Name == line.PreCommand);
+
+                if (sequencePluginToExecute != null) {
                     Task.Factory.StartNew(
-                        () => SendSequence(msg.From, SequencePluginTaskKeys[line.Command].ExecuteTask(line), msg.Type));
+                        () => SendSequence(msg.From, sequencePluginToExecute.ExecuteTask(line), msg.Type));
                     return;
                 }
 
@@ -224,48 +271,16 @@ namespace XMPP_bot
         }
 
         [ImportMany(AllowRecomposition = true)]
-        public static IEnumerable<IXmppBotPlugin> Plugins { get; set; }
+        public static IEnumerable<XmppBotPluginBase> Plugins { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
-        public static IEnumerable<IXmppBotSequencePlugin> SequencePlugins { get; set; }
-
-        public static Dictionary<string, IXmppBotPlugin> PluginTaskKeys { get; set; }
-
-        public static Dictionary<string, IXmppBotSequencePlugin> SequencePluginTaskKeys { get; set; }
+        public static IEnumerable<XmppBotSequencePluginBase> SequencePlugins { get; set; }
 
         private static string LoadPlugins()
         {
             var container = new CompositionContainer(_catalog);
-            Plugins = container.GetExportedValues<IXmppBotPlugin>();
-            SequencePlugins = container.GetExportedValues<IXmppBotSequencePlugin>();
-
-            PluginTaskKeys = new Dictionary<string, IXmppBotPlugin>();
-
-            foreach (var plugin in Plugins) {
-                foreach (var taskKey in plugin.TaskKeys) {
-                    var key = plugin.Name + "-" + taskKey;
-
-                    if (PluginTaskKeys.ContainsKey(key)) {
-                        return "Duplicate task found. Loading Stopped. " + key;
-                    }
-
-                    PluginTaskKeys.Add(plugin.Name + "-" + taskKey, plugin);
-                }
-            }
-
-            SequencePluginTaskKeys = new Dictionary<string, IXmppBotSequencePlugin>();
-
-            foreach (var plugin in SequencePlugins) {
-                foreach (var taskKey in plugin.TaskKeys) {
-                    var key = plugin.Name + "-" + taskKey;
-
-                    if (SequencePluginTaskKeys.ContainsKey(key)) {
-                        return "Duplicate task found. Loading Stopped. " + key;
-                    }
-
-                    SequencePluginTaskKeys.Add(key, plugin);
-                }
-            }
+            Plugins = container.GetExportedValues<XmppBotPluginBase>();
+            SequencePlugins = container.GetExportedValues<XmppBotSequencePluginBase>();
 
             var builder = new StringBuilder();
             
