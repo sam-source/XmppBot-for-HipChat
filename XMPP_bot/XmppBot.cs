@@ -217,6 +217,11 @@ namespace XMPP_bot
                 }
 
                 var line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
+
+                if (!line.IsCommand) {
+                    return;
+                }
+
                 line.NickName = CoreTasks.GetNickName(user);
 
                 if (line.Command == "help") {
