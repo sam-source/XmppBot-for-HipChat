@@ -52,7 +52,15 @@ namespace XmppBot.Plugins.Salesforce.Tasks
                 configType = ConfigurationType.Live;
             }
 
-            var records = client.GetDataByVersion(configType, version, appType);
+            type = args.FirstOrDefault(a => a.StartsWith("location"));
+
+            TND.DomainLocation location = DomainLocation.NorthAmerica;
+
+            if (string.Equals(type, "location=aws", StringComparison.InvariantCultureIgnoreCase)) {
+                location = DomainLocation.Australia;
+            }
+
+            var records = client.GetDataByVersion(configType, version, appType, location);
 
             var sb = new StringBuilder();
             sb.Append("/quote ");
@@ -72,7 +80,7 @@ namespace XmppBot.Plugins.Salesforce.Tasks
             }
 
             sb.Append("--------------------------------------------------------------------------\n");
-            sb.AppendFormat("Query: config={0} and version={1} and type={2}\n", configType, version, appType);
+            sb.AppendFormat("Query: config={0} and version={1} and type={2} and location={3}\n", configType, version, appType, location);
             sb.Append("Records Found: ");
             sb.Append(records.Count);
             sb.Append("\n--------------------------------------------------------------------------");
@@ -100,7 +108,7 @@ namespace XmppBot.Plugins.Salesforce.Tasks
 
         protected override string HelpExample
         {
-            get { return "!tnd-get-query config=qa version=4.5 type=tnew"; }
+            get { return "!tnd-get-query config=qa version=4.5 type=tnew location=aws"; }
         }
 
         protected override string HelpFormat
