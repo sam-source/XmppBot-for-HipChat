@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 
 using TND;
@@ -8,12 +9,12 @@ using XmppBot.Common;
 
 namespace XmppBot.Plugins.Salesforce.Tasks
 {
-    class GetQueryTask : SimpleTaskBase
+    class GetQueryTask : SequenceTaskBase
     {
         public GetQueryTask(string pluginName)
             : base(pluginName, "get-query") { }
 
-        protected override string ExecuteTask(ParsedLine taskInfo)
+        protected override IObservable<string> ExecuteTask(ParsedLine taskInfo)
         {
             //tnd-get-query type=tnew version=4.5 location=ramp config=live
 
@@ -32,7 +33,7 @@ namespace XmppBot.Plugins.Salesforce.Tasks
             type = args.FirstOrDefault(a => a.StartsWith("version"));
 
             if (string.IsNullOrWhiteSpace(type)) {
-                return "Filter 'version' is required. Example: 'version=4.5'";
+                return Observable.Return("Filter 'version' is required. Example: 'version=4.5'");
             }
 
             System.Version version = new System.Version(type.Substring(type.IndexOf("=") + 1));
@@ -40,7 +41,7 @@ namespace XmppBot.Plugins.Salesforce.Tasks
             type = args.FirstOrDefault(a => a.StartsWith("config"));
 
             if (string.IsNullOrWhiteSpace(type)) {
-                return "Filter 'config' is required. Example: 'config=live'";
+                return Observable.Return("Filter 'config' is required. Example: 'config=live'");
             }
 
             TND.ConfigurationType configType = ConfigurationType.QA;
@@ -55,18 +56,19 @@ namespace XmppBot.Plugins.Salesforce.Tasks
 
             var sb = new StringBuilder();
             sb.Append("/quote ");
-            sb.Append("Org Code, Machine IPs, Live Version, QA Version, Web Server Name, Location\n");
+            sb.Append("Org Code, Machine IPs, Live Version, QA Version, Web Server Name, Location, domain\n");
             sb.Append("--------------------------------------------------------------------------\n");
 
             foreach (var record in records) {
                 sb.AppendFormat(
-                    "{0}, {1}, {2}, {3}, {4}, {5}\n",
+                    "{0}, {1}, {2}, {3}, {4}, {5}, {6}\n",
                     record.OrgCode,
                     string.Join(",", record.MachineIPAddresses),
                     record.LiveVersion,
                     record.QAVersion,
                     record.WebServerNames,
-                    record.Location);
+                    record.Location,
+                    record.Domain);
             }
 
             sb.Append("--------------------------------------------------------------------------\n");
@@ -75,31 +77,35 @@ namespace XmppBot.Plugins.Salesforce.Tasks
             sb.Append(records.Count);
             sb.Append("\n--------------------------------------------------------------------------");
 
-            return sb.ToString();
+            return Observable.Return(sb.ToString());
+        }
+
+        protected virtual bool IsValid(ParsedLine taskInfo)
+        {
+            if (this.IsMatch(taskInfo)) {
+                return true;
+            }
+
+            if (taskInfo.Args.Count() > 1) {
+                return true;
+            }
+
+            return false;
         }
 
         protected override string HelpDescription
         {
-            get
-            {
-                return "";
-            }
+            get { return "The command will retrieve a list of clients from TND that match the query parameters."; }
         }
 
         protected override string HelpExample
         {
-            get
-            {
-                return "";
-            }
+            get { return "!tnd-get-query config=qa version=4.5 type=tnew"; }
         }
 
         protected override string HelpFormat
         {
-            get
-            {
-                return "";
-            }
+            get { return "This command has two required parameters and one optional parameter. The two required parameters are config={?} and version={?}. The config parameter value can be 'live' or 'qa'. The version parameter needs to match the value stored within TND. The option parameter is type={?}. Type can have a value of 'tnew' or 'tnst'."; }
         }
     }
 }

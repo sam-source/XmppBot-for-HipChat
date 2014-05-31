@@ -4,12 +4,14 @@ using System.ComponentModel.Composition;
 using XmppBot.Common;
 using XmppBot.Plugins.Salesforce.Tasks;
 using XmppBot.Plugins.Salesforce.Tasks.Fixes;
+using XmppBot.Plugins.Salesforce.Tasks.Gets;
+using XmppBot.Plugins.Salesforce.Tasks.Ping;
 using XmppBot.Plugins.Salesforce.Tasks.Sets;
 
 namespace XmppBot.Plugins.Salesforce
 {
-    [Export(typeof(XmppBotPluginBase))]
-    public class TNDPlugin : XmppBotPluginBase
+    [Export(typeof(XmppBotSequencePluginBase))]
+    public class TNDPlugin : XmppBotSequencePluginBase
     {
         public TNDPlugin() : base("tnd")
         {
@@ -17,8 +19,10 @@ namespace XmppBot.Plugins.Salesforce
             this.Tasks.Add(new GetApiTask(this.Name));
             this.Tasks.Add(new GetDomainTask(this.Name));
             this.Tasks.Add(new GetVersion(this.Name));
+            this.Tasks.Add(new GetMachineIPs(this.Name));
             this.Tasks.Add(new SetMachineIPsTask(this.Name));
             this.Tasks.Add(new FixMachineIPsTask(this.Name));
+            this.Tasks.Add(new PingVersion(this.Name));
         }
     }
 }

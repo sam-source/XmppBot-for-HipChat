@@ -15,10 +15,10 @@ namespace XMPP_bot.Tasks
         protected override bool IsValid(ParsedLine taskInfo)
         {
             if (this.IsMissingArgs(taskInfo)) {
-                return true;
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         protected override string ExecuteTask(ParsedLine taskInfo)

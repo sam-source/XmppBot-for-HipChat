@@ -45,8 +45,7 @@ namespace XmppBot.Common
         {
             var sb = new StringBuilder();
 
-            sb.Append("/quote ");
-            sb.Append("Command: ");
+            sb.Append("/quote Command: ");
             sb.Append(this.FullName);
             sb.Append("\nDescription: ");
             sb.Append(this.HelpDescription);
