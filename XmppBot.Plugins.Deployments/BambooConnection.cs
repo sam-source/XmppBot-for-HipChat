@@ -105,11 +105,13 @@ namespace XmppBot.Plugins.Deployments
         {
 
             try {
-                var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic&bamboo.variable.orgCode={1}&bamboo.variable.buildType={2}";
+                var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic&bamboo.variable.orgCodes={1}&bamboo.variable.targetEnvironment={2}";
 
                 var url = string.Format(urlFormat, planKey, orgCode.ToUpper(), buildType.ToUpper());
                 var client = this.GetWebClient();
+                
                 var xml = client.UploadString(url, "");
+
                 var parser = new BambooResultParser();
 
                 return parser.ParseQueueResult(xml);

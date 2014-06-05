@@ -47,11 +47,11 @@ namespace XmppBot.Common
 
             sb.Append("/quote Command: ");
             sb.Append(this.FullName);
-            sb.Append("\nDescription: ");
+            sb.Append("\n\nDescription: ");
             sb.Append(this.HelpDescription);
-            sb.Append("\nFormat: ");
+            sb.Append("\n\nFormat: ");
             sb.Append(this.HelpFormat);
-            sb.Append("\nExample: ");
+            sb.Append("\n\nExample: ");
             sb.Append(this.HelpExample);
 
             return sb.ToString();

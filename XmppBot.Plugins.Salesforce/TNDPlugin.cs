@@ -23,6 +23,7 @@ namespace XmppBot.Plugins.Salesforce
             this.Tasks.Add(new SetMachineIPsTask(this.Name));
             this.Tasks.Add(new FixMachineIPsTask(this.Name));
             this.Tasks.Add(new PingVersion(this.Name));
+            this.Tasks.Add(new SetVersion(this.Name));
         }
     }
 }

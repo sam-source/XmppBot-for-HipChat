@@ -67,6 +67,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tasks\Sets\SetMachineIPsTask.cs" />
+    <Compile Include="Tasks\Sets\SetVersion.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TNDPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

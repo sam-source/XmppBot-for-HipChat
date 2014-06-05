@@ -28,7 +28,16 @@ namespace XmppBot.Plugins.Salesforce.Tasks
                 return Observable.Return(user + ", that org code did not return any results");
             }
 
-            return Observable.Return(string.Format("{0} the domain for {1} is {2}", user, args[0], record.TNEW_DNS_Subdomain__c));
+            return
+                Observable.Return(
+                    string.Format(
+                        "{0} the domain for {1} is {2}\nThe qa site is {3}",
+                        user,
+                        args[0],
+                        record.TNEW_DNS_Subdomain__c,
+                        record.TNEW_DNS_Subdomain__c.EndsWith("/")
+                            ? record.TNEW_DNS_Subdomain__c + "_QA_"
+                            : record.TNEW_DNS_Subdomain__c + "/_QA_"));
         }
 
         protected virtual bool IsValid(ParsedLine taskInfo)

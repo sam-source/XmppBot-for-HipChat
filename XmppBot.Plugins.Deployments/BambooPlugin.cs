@@ -10,8 +10,8 @@ namespace XmppBot.Plugins.Deployments
     {
         public BambooPlugin() : base("bamboo")
         {
-            this.Tasks.Add(new BuildTask(this.Name));
-            this.Tasks.Add(new GetBuildStatusTask(this.Name));
+            //this.Tasks.Add(new BuildTask(this.Name));
+            //this.Tasks.Add(new GetBuildStatusTask(this.Name));
             this.Tasks.Add(new DeployContentTask(this.Name));
         }
     }
