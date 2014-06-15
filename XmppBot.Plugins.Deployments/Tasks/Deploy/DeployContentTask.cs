@@ -17,10 +17,15 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
         protected override IObservable<string> ExecuteTask(ParsedLine line)
         {
             var user = line.NickName;
+
+            if (isDeploying) {
+                return Observable.Return(string.Format("I can't do that {0}. There is a deploy already in progress.", user));
+            }
             
             /*
              curl -X POST --user eve:Tr1fl3! "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/CB-TNEWRAMPQA?os_authType=basic&bamboo.variable.orgCodes=TWEB&bamboo.variable.targetEnvironment=QA"
              */
+
             var orgs = line.Args[1].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             string buildKey;
             ParsedData record = null;
@@ -79,12 +84,6 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
                     return Observable.Return("Location of client could not be determined.");
             }
 
-            if (isDeploying) {
-                return Observable.Return(string.Format("I can't do that {0}. There is a deploy already in progress.", user));
-            }
-
-            isDeploying = true;
-
             var builder = new BambooConnection();
 
             var buildNumber = builder.DeployContent(buildKey, line.Args[1], line.Args[0]);
@@ -94,6 +93,8 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
             if (!int.TryParse(buildNumber, out buildNumberInt)) {
                 return Observable.Return(buildNumber);
             }
+            
+            isDeploying = true;
 
             string buildState = null;
             int completedCount = 0;
@@ -128,7 +129,7 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
                     .Select(l => string.Format(buildState));
 
             return
-                Observable.Return(string.Format("{0}, I have started the bamboo build. The build number is {1}", user, buildNumber))
+                Observable.Return(string.Format("{0}, I have started the bamboo build for {2}. The build number is {1}", user, buildNumber, record.Name))
                     .Concat(seq)
                     .Concat(Observable.Return(string.Format("Build {0} finished", buildNumber)));
         }
