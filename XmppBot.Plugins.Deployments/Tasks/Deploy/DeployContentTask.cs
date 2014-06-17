@@ -56,9 +56,17 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
                 Version deployVerion;
 
                 if (string.Equals(line.Args[0], "live", StringComparison.InvariantCultureIgnoreCase)) {
+                    if (string.IsNullOrWhiteSpace(record.LiveVersion)) {
+                        return Observable.Return(string.Format("{0}, {1} does not have a live version number set. Use the tnd-set-version command to set their version number.", user, org));
+                    }
+
                     deployVerion = Version.Parse(record.LiveVersion);
                 }
                 else {
+                    if (string.IsNullOrWhiteSpace(record.QAVersion)) {
+                        return Observable.Return(string.Format("{0}, {1} does not have a qa version number set. Use the tnd-set-version command to set their version number.", user, org));
+                    }
+
                     deployVerion = Version.Parse(record.QAVersion);
                 }
 
