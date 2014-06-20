@@ -105,7 +105,7 @@ namespace XmppBot.Plugins.Deployments
         {
 
             try {
-                var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic&bamboo.variable.orgCodes={1}&bamboo.variable.targetEnvironment={2}";
+                var urlFormat = "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/{0}?os_authType=basic&bamboo.variable.orgCodes={1}&bamboo.variable.configType={2}";
 
                 var url = string.Format(urlFormat, planKey, orgCode.ToUpper(), buildType.ToUpper());
                 var client = this.GetWebClient();

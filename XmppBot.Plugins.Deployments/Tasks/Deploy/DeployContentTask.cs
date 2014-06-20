@@ -23,7 +23,7 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
             }
             
             /*
-             curl -X POST --user eve:Tr1fl3! "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/CB-TNEWRAMPQA?os_authType=basic&bamboo.variable.orgCodes=TWEB&bamboo.variable.targetEnvironment=QA"
+             curl -X POST --user eve:Tr1fl3! "http://bamboo.tessituranetwork.com:8085/rest/api/latest/queue/CB-TNEWRAMPQA?os_authType=basic&bamboo.variable.orgCodes=TWEB&bamboo.variable.configType=QA"
              */
 
             var orgs = line.Args[1].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
