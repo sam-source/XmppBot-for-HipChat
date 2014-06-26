@@ -216,6 +216,11 @@ namespace XMPP_bot
                     return;
                 }
 
+                if (msg.Body.Trim() == "(sandcrab)") {
+                    SendMessage(msg.From, "(sandcrab)", msg.Type);
+                    return;
+                }
+
                 var line = new ParsedLine(msg.Body.Trim(), user, ConfigurationManager.AppSettings["BotHandle"]);
 
                 if (!line.IsCommand) {
@@ -249,6 +254,8 @@ namespace XMPP_bot
                         () => SendSequence(msg.From, sequencePluginToExecute.ExecuteTask(line), msg.Type));
                     return;
                 }
+
+                
 
                 SendMessage(msg.From, "Unknown command.", msg.Type);
             }
