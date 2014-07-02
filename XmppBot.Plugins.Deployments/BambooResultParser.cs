@@ -20,10 +20,10 @@ namespace XmppBot.Plugins.Deployments
 
             if (string.Equals(node.Value, "Unknown", StringComparison.InvariantCultureIgnoreCase)) {
                 return string.Format(
-                    "Build {0} (Plan: {1}) is still in progress. Percent Completed: {2}",
+                    "Build {0} (Plan: {1}) is still in progress. Running for: {2}",
                     buildNumber,
                     planKey,
-                    xmlDoc.Element("progress").Descendants("percentageCompletedPretty").First().Value);
+                    xmlDoc.Element("progress").Descendants("prettyBuildTime").First().Value);
             }
 
             return node.Value;
