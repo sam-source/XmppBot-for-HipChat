@@ -117,7 +117,7 @@ namespace XmppBot.Plugins.Deployments
                 return parser.ParseQueueResult(xml);
             }
             catch (Exception ex) {
-                return string.Format("Error while starting content deploy: {0} - (After two errors, I will stop checking the status.)", ex.Message);
+                return string.Format("Error while starting content deploy: {0}", ex.Message);
             }
         }
     }

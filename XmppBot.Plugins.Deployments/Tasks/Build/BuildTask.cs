@@ -45,8 +45,8 @@ namespace XmppBot.Plugins.Deployments.Tasks.Build
                             return true;
                         }
                         if (buildState.StartsWith("Failed")) {
-                            isBuilding = false;
-                            return false;
+                            completedCount++;
+                            return true;
                         }
 
                         if (completedCount > 0) {

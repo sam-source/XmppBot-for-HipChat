@@ -110,25 +110,27 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
                 Observable.Interval(TimeSpan.FromSeconds(10))
                     .TakeWhile(l =>
                     {
-                        buildState = builder.GetBuildState(buildKey, buildNumber);
-
-                        if (buildState == "Successful") {
+                        if (completedCount > 3) {
                             isDeploying = false;
                             return false;
                         }
 
+                        buildState = builder.GetBuildState(buildKey, buildNumber);
+
+                        if (buildState == "Successful") {
+                            completedCount = 4;
+                            buildState = string.Format("(success) {0}", buildState);
+                            return true;
+                        }
+
                         if (buildState.StartsWith("Failed")) {
-                            isDeploying = false;
-                            return false;
+                            completedCount = 4;
+                            buildState = string.Format("(failed) {0} (facepalm)", buildState);
+                            return true;
                         }
 
                         if (buildState.StartsWith("Build")) {
                             return true;
-                        }
-
-                        if (completedCount > 3) {
-                            isDeploying = false;
-                            return false;
                         }
 
                         completedCount++;
@@ -138,8 +140,7 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
 
             return
                 Observable.Return(string.Format("{0}, I have started the bamboo build for {2}. The build number is {1}", user, buildNumber, record.Name))
-                    .Concat(seq)
-                    .Concat(Observable.Return(string.Format("Build {0} finished", buildNumber)));
+                    .Concat(seq);
         }
 
         protected override string HelpDescription
