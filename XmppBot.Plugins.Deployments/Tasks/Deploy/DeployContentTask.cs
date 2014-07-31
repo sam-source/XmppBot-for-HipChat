@@ -107,7 +107,7 @@ namespace XmppBot.Plugins.Deployments.Tasks.Deploy
             string buildState = null;
             int completedCount = 0;
             IObservable<string> seq =
-                Observable.Interval(TimeSpan.FromSeconds(10))
+                Observable.Interval(TimeSpan.FromSeconds(30))
                     .TakeWhile(l =>
                     {
                         if (completedCount > 3) {
